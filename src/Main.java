@@ -41,7 +41,7 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
         net = new Crab (750, 400, 0, 0);
         netPic = Toolkit.getDefaultToolkit().getImage("net.png");
 
-        bucket = new Crab(200, 200, 0, 0);
+        bucket = new Crab(1500, 150, 0, 0);
         bucketPic = Toolkit.getDefaultToolkit().getImage("bucket.png");
 
 
@@ -111,17 +111,21 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
     private void render() {
 
         Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
-        System.out.println("pqeorjg");
 
         g.clearRect(0,0,WIDTH,HEIGHT);
         g.drawString("hee;p", 55, 550);
         g.drawImage(background, 0, 0, WIDTH, HEIGHT, null);
       //  System.out.println(background.getWidth(null));
 
-
         for(int i=0; i<crab.length; i++) {
             g.drawImage(crabPic, crab[i].xpos, crab[i].ypos, 120, 100, null);
         }
+        g.drawImage(netPic, net.xpos, net.ypos, 400, 300, null);
+
+        g.drawImage(bucketPic, bucket.xpos, bucket.ypos, 250, 300, null);
+
+        g.dispose();
+        bufferStrategy.show();
     }
 
     @Override
@@ -171,6 +175,7 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        net.xpos=e.getX();
+        net.ypos=e.getY();
     }
 }
