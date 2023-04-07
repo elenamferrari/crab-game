@@ -100,9 +100,9 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
         for(int i=0; i<crab.length; i++) {
             if (crab[i].rec.intersects(net.rec) /*&& crab[i].isAlive == true*/) {
                 crab[i].xpos = net.xpos;
-                crab[i].ypos = net.ypos;
-                crab[i].dx=0;
-                crab[i].dy=0;
+                crab[i].ypos = net.ypos+120;
+                crab[i].dx=net.dx;
+                crab[i].dy=net.dy;
                 crab[i].rec=new Rectangle(crab[i].xpos, crab[i].ypos, crab[i].width, crab[i].height);
                 System.out.println("!");
             }
@@ -162,12 +162,14 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
         Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 
         g.clearRect(0,0,WIDTH,HEIGHT);
-        g.drawString("hee;p", 55, 550);
 
         if(GameStart==true) {
             g.drawImage(background, 0, 0, WIDTH, HEIGHT, null);
             //  System.out.println(background.getWidth(null));
 
+            if(bucket.isAlive==true) {
+                g.drawImage(bucketPic, bucket.xpos, bucket.ypos, 250, 300, null);
+            }
 
                 for (int i = 0; i < crab.length; i++) {
                     if (crab[i].isAlive) {
@@ -176,10 +178,10 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
                 }
             }
 
-            g.drawImage(netPic, net.xpos, net.ypos, 400, 300, null);
-            //g.drawRect(net.rec.x, net.rec.y, net.rec.width, net.rec.height);
-
-            g.drawImage(bucketPic, bucket.xpos, bucket.ypos, 250, 300, null);
+            if(net.isAlive==true) {
+                g.drawImage(netPic, net.xpos, net.ypos, 400, 300, null);
+                //g.drawRect(net.rec.x, net.rec.y, net.rec.width, net.rec.height);
+            }
 
                 for (int i = 0; i < snail.length; i++) {
                     if (snail[i].isAlive) {
@@ -190,6 +192,27 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
         else {
             g.drawImage(startscreen, 0, 0, WIDTH, HEIGHT, null);
+        }
+
+        for(int i=0; i<crab.length; i++) {
+            for(int j=0; j<snail.length; j++) {
+                if(crab[i].isAlive==false && snail[j].isAlive==true) {
+                    snail[j].isAlive=false;
+                    g.drawImage(winscreen, 0, 0, WIDTH, HEIGHT, null);
+                    bucket.isAlive=false;
+                    net.isAlive=false;
+                }
+            }
+        }
+
+        for(int i=0; i<crab.length; i++) {
+            for(int j=0; j<snail.length; j++) {
+                if(crab[i].isAlive==false && snail[j].isAlive==false) {
+                    g.drawImage(losescreen, 0, 0, WIDTH, HEIGHT, null);
+                    bucket.isAlive=false;
+                    net.isAlive=false;
+                }
+            }
         }
 
         g.dispose();
@@ -251,6 +274,6 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
     public void mouseMoved(MouseEvent e) {
         net.xpos=e.getX();
         net.ypos=e.getY();
-        net.rec=new Rectangle(net.xpos, net.ypos, 80, 60);
+        net.rec=new Rectangle(net.xpos, net.ypos+120, 150, 120);
     }
 }
