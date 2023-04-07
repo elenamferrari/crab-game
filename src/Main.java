@@ -13,13 +13,19 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
     public Canvas canvas;
     public JPanel panel;
     public BufferStrategy bufferStrategy;
+    public Boolean GameStart;
+    public Image startscreen;
+    public Image losescreen;
+    public Image winscreen;
     public Image crabPic;
     public Image bucketPic;
     public Image netPic;
+    public Image snailPic;
     public Image background;
     private Crab[] crab;
     private Crab bucket;
     private Crab net;
+    private Crab[] snail;
 
     public static void main(String[] args) {
         Main ex = new Main();
@@ -31,18 +37,37 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
         canvas.addKeyListener(this);
 
         background = Toolkit.getDefaultToolkit().getImage("oceanphoto.jpg");
+        startscreen = Toolkit.getDefaultToolkit().getImage("startscreen.jpg");
+        winscreen = Toolkit.getDefaultToolkit().getImage("winscreen.jpg");
+        losescreen = Toolkit.getDefaultToolkit().getImage("losescreen.jpg");
 
-        crab = new Crab[10];
+        crab = new Crab[6];
         for(int x = 0; x<crab.length; x++) {
-            crab[x] = new Crab (((int)(Math.random()*1500+15)), ((int)(Math.random()*1500+15)), ((int)(Math.random()*12+1)), ((int)(Math.random()*12+1)));
+            crab[x] = new Crab (((int)(Math.random()*1500+15)), ((int)(Math.random()*750)+700), ((int)(Math.random()*12+1)), ((int)(Math.random()*12+1)));
             crabPic = Toolkit.getDefaultToolkit().getImage("japaneseshorecrab.png");
+            crab[x].height=100;
+            crab[x].width=120;
         }
+
+        snail = new Crab[11];
+        for(int x = 0; x<snail.length; x++) {
+            snail[x] = new Crab(((int) (Math.random() * 1500 + 15)), ((int) (Math.random() * 750) + 700), ((int) (Math.random() * 12 + 1)), 0);
+            snail[x].height=50;
+            snail[x].width=60;
+        }
+            snailPic = Toolkit.getDefaultToolkit().getImage("snail.png");
 
         net = new Crab (750, 400, 0, 0);
         netPic = Toolkit.getDefaultToolkit().getImage("net.png");
+        net.height=300;
+        net.width=400;
 
         bucket = new Crab(1500, 150, 0, 0);
         bucketPic = Toolkit.getDefaultToolkit().getImage("bucket.png");
+        bucket.height=300;
+        bucket.width=250;
+
+        GameStart=false;
 
 
     }
@@ -52,6 +77,14 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
             render();
             crash();
             pause(20);
+           // bounce();
+            for(int i=0; i<snail.length; i++) {
+                snail[i].wrap();
+            }
+            for(int i=0; i<crab.length; i++) {
+                crab[i].bounce();
+            }
+            //add bounce command, parameters for crabs, "fish" to save wrap at bottom, net moves w mouse
         }
     }
 
@@ -64,16 +97,31 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
     }
 
     public void crash() {
-        if(crab[5].rec.intersects(net.rec) && crab[5].isAlive == true) {
-            crab[5].dy = net.dy;
-            crab[5].dx = net.dx;
-            System.out.println("!");
+        for(int i=0; i<crab.length; i++) {
+            if (crab[i].rec.intersects(net.rec) /*&& crab[i].isAlive == true*/) {
+                crab[i].xpos = net.xpos;
+                crab[i].ypos = net.ypos;
+                crab[i].dx=0;
+                crab[i].dy=0;
+                crab[i].rec=new Rectangle(crab[i].xpos, crab[i].ypos, crab[i].width, crab[i].height);
+                System.out.println("!");
+            }
         }
 
-        if (crab[5].rec.intersects(net.rec) && crab[5].isAlive == true) {
-            crab[5].isAlive = false;
+        for(int i=0; i<crab.length; i++) {
+            if (crab[i].rec.intersects(bucket.rec) && crab[i].isAlive == true) {
+                crab[i].isAlive = false;
+            }
         }
 
+        for(int i=0; i<snail.length; i++) {
+            for(int j=0; j<crab.length; j++) {
+                if (crab[j].rec.intersects(snail[i].rec)) {
+                    snail[i].isAlive=false;
+                    System.out.println("nom");
+                }
+            }
+        }
     }
 
 
@@ -93,6 +141,7 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
         panel.add(canvas);  // adds the canvas to the panel.
         canvas.addMouseListener(this);
         canvas.addMouseMotionListener(this);
+        canvas.addKeyListener(this);
 
         // frame operations
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //makes the frame close and exit nicely
@@ -114,18 +163,37 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
         g.clearRect(0,0,WIDTH,HEIGHT);
         g.drawString("hee;p", 55, 550);
-        g.drawImage(background, 0, 0, WIDTH, HEIGHT, null);
-      //  System.out.println(background.getWidth(null));
 
-        for(int i=0; i<crab.length; i++) {
-            g.drawImage(crabPic, crab[i].xpos, crab[i].ypos, 120, 100, null);
+        if(GameStart==true) {
+            g.drawImage(background, 0, 0, WIDTH, HEIGHT, null);
+            //  System.out.println(background.getWidth(null));
+
+
+                for (int i = 0; i < crab.length; i++) {
+                    if (crab[i].isAlive) {
+                    g.drawImage(crabPic, crab[i].xpos, crab[i].ypos, 120, 100, null);
+                    //g.drawRect(crab[i].xpos, crab[i].ypos, 120, 100);
+                }
+            }
+
+            g.drawImage(netPic, net.xpos, net.ypos, 400, 300, null);
+            //g.drawRect(net.rec.x, net.rec.y, net.rec.width, net.rec.height);
+
+            g.drawImage(bucketPic, bucket.xpos, bucket.ypos, 250, 300, null);
+
+                for (int i = 0; i < snail.length; i++) {
+                    if (snail[i].isAlive) {
+                    g.drawImage(snailPic, snail[i].xpos, snail[i].ypos, 60, 50, null);
+                }
+            }
         }
-        g.drawImage(netPic, net.xpos, net.ypos, 400, 300, null);
 
-        g.drawImage(bucketPic, bucket.xpos, bucket.ypos, 250, 300, null);
+        else {
+            g.drawImage(startscreen, 0, 0, WIDTH, HEIGHT, null);
+        }
 
         g.dispose();
-        bufferStrategy.show();
+                bufferStrategy.show();
     }
 
     @Override
@@ -135,6 +203,12 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.println(e.getKeyCode() + " what you pressed" + e.getKeyChar());
+        if(e.getKeyCode()==32) {
+            System.out.println("press space bar");
+            GameStart=true;
+        }
+
 
     }
 
@@ -177,5 +251,6 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
     public void mouseMoved(MouseEvent e) {
         net.xpos=e.getX();
         net.ypos=e.getY();
+        net.rec=new Rectangle(net.xpos, net.ypos, 80, 60);
     }
 }

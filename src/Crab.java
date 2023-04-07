@@ -16,6 +16,8 @@ public class Crab {
         ypos = pypos;
         dx = pdx;
         dy = pdy;
+        height=40;
+        width=40;
         isAlive = true;
         rec = new Rectangle (xpos, ypos, height, width);
     }
@@ -27,6 +29,29 @@ public class Crab {
     }
 
     public void bounce() {
+        move();
+        if (xpos>=2000) {
+            dx=-dx;
+        }
+        if (ypos>=1500) {
+            dy=-dy;
+        }
+        if(ypos<=750) {
+            dy=-dy;
+        }
+        if (xpos<=5) {
+            dx=-dx;
+        }
+        rec = new Rectangle (xpos, ypos, height, width);
+    }
 
+    public void wrap() {
+        dy = 0;
+        dx = ((int) (Math.random() * 15));
+        move();
+        if (xpos >= 2000) {
+            xpos = 5;
+        }
+        rec = new Rectangle (xpos, ypos, height, width);
     }
 }
