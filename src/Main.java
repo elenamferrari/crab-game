@@ -38,8 +38,8 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
         background = Toolkit.getDefaultToolkit().getImage("oceanphoto.jpg");
         startscreen = Toolkit.getDefaultToolkit().getImage("startscreen.jpg");
-        winscreen = Toolkit.getDefaultToolkit().getImage("winscreen.jpg");
-        losescreen = Toolkit.getDefaultToolkit().getImage("losescreen.jpg");
+        winscreen = Toolkit.getDefaultToolkit().getImage("winscreen.png");
+        losescreen = Toolkit.getDefaultToolkit().getImage("losescreen.png");
 
         crab = new Crab[6];
         for(int x = 0; x<crab.length; x++) {
@@ -66,6 +66,7 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
         bucketPic = Toolkit.getDefaultToolkit().getImage("bucket.png");
         bucket.height=300;
         bucket.width=250;
+        bucket.rec = new Rectangle(bucket.xpos, bucket.ypos, 80, 150);
 
         GameStart=false;
 
@@ -196,9 +197,8 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
         for(int i=0; i<crab.length; i++) {
             for(int j=0; j<snail.length; j++) {
-                if(crab[i].isAlive==false && snail[j].isAlive==true) {
-                    snail[j].isAlive=false;
-                    g.drawImage(winscreen, 0, 0, WIDTH, HEIGHT, null);
+                if(crab[i].isAlive==false && snail[j].isAlive==false) {
+                    g.drawImage(losescreen, 0, 0, WIDTH, HEIGHT, null);
                     bucket.isAlive=false;
                     net.isAlive=false;
                 }
@@ -207,8 +207,8 @@ public class Main implements Runnable, KeyListener, MouseMotionListener, MouseLi
 
         for(int i=0; i<crab.length; i++) {
             for(int j=0; j<snail.length; j++) {
-                if(crab[i].isAlive==false && snail[j].isAlive==false) {
-                    g.drawImage(losescreen, 0, 0, WIDTH, HEIGHT, null);
+                if(crab[i].isAlive==false && snail[j].isAlive==true) {
+                    g.drawImage(winscreen, 0, 0, WIDTH, HEIGHT, null);
                     bucket.isAlive=false;
                     net.isAlive=false;
                 }
